@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart NFC Digital Card Studio</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -24,10 +23,8 @@
 </head>
 <body class="bg-gradient-to-b from-purple-300 via-indigo-100 to-purple-300 text-slate-800 font-sans min-h-screen flex flex-col items-center justify-center p-0 m-0 antialiased selection:bg-purple-500 selection:text-white">
 
-    <!-- MAIN FULL SCREEN WEBSITE INTERFACE -->
     <div class="w-full max-w-md min-h-screen flex flex-col justify-between pt-6 pb-6 px-6 relative overflow-hidden bg-gradient-to-b from-purple-200 via-indigo-50 to-purple-200 shadow-2xl">
         
-        <!-- Header Logo & Name -->
         <div class="text-center mt-2 relative flex flex-col items-center">
             <div id="profileLogoContainer" class="w-24 h-24 mx-auto rounded-full bg-[#1e1b4b] flex items-center justify-center text-white shadow-2xl mb-3 border-4 border-white/70 overflow-hidden">
                 <svg viewBox="0 0 100 100" class="w-14 h-14 fill-none stroke-white stroke-[2.5] stroke-linecap-round stroke-linejoin-round">
@@ -36,16 +33,12 @@
                     <path d="M50,70 C70,65 80,45 72,30 C62,40 55,55 50,70 Z" />
                 </svg>
             </div>
-            <h1 id="displayTitle" class="font-extrabold text-3xl text-[#1e1b4b] tracking-tight">Dream Studio</h1>
+            <h1 id="displayTitle" class="font-extrabold text-3xl text-[#1e1b4b] tracking-tight">Loading...</h1>
             <p id="displaySubtitle" class="text-sm font-bold text-slate-700 mt-1">Follow • Connect • Explore</p>
         </div>
 
-        <!-- Dynamic Link Buttons List Container -->
-        <div id="linksRenderList" class="w-full space-y-3.5 my-4">
-            <!-- Rendered dynamically -->
-        </div>
+        <div id="linksRenderList" class="w-full space-y-3.5 my-4"></div>
 
-        <!-- Bottom Curved Wave Footer Banner -->
         <div class="w-full py-3.5 text-center bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-[2rem] shadow-lg mt-auto px-6 mb-3">
             <p id="displayFooterMsg" class="text-sm font-bold tracking-wide flex items-center justify-center gap-1.5">
                 <span>Thank you for visiting!</span>
@@ -53,10 +46,8 @@
             </p>
         </div>
 
-        <!-- Footer: Single Unified Footer Text & Small Connect Link -->
         <div class="w-full flex items-center justify-between pt-1 border-t border-purple-300/60 text-xs font-semibold px-1">
             <div class="flex items-center text-slate-700 text-xs">
-                <!-- Secret Admin Dot before Text -->
                 <button onclick="openPinModal()" class="w-2.5 h-2.5 rounded-full bg-purple-500/25 hover:bg-purple-600 focus:outline-none transition-colors mr-1.5 inline-block cursor-pointer" title="Admin Login"></button>
                 <span id="displayFooterText" class="text-slate-800 text-xs font-semibold">Provided by Smart Cards</span>
             </div>
@@ -67,7 +58,6 @@
 
     </div>
 
-    <!-- SESSION EXPIRED SCREEN -->
     <div id="sessionExpiredScreen" class="fixed inset-0 bg-gradient-to-b from-purple-900 via-slate-900 to-indigo-950 z-40 hidden flex flex-col items-center justify-center p-6 text-center text-white">
         <div class="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center text-rose-400 text-3xl mb-4 border border-white/20 shadow-2xl">
             <i class="fa-solid fa-clock-rotate-left"></i>
@@ -80,7 +70,6 @@
         </button>
     </div>
 
-    <!-- 6-DIGIT PIN AUTHENTICATION MODAL -->
     <div id="pinAuthModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-xs rounded-3xl p-6 text-center shadow-2xl border border-purple-100">
             <h3 class="text-lg font-extrabold text-slate-800 mb-4">Enter 6-Digit PIN</h3>
@@ -95,7 +84,6 @@
         </div>
     </div>
 
-    <!-- FULL DYNAMIC ADMIN MODAL -->
     <div id="adminModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-lg rounded-3xl p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
             <div class="flex justify-between items-center mb-5 border-b pb-3">
@@ -107,7 +95,6 @@
                 </button>
             </div>
 
-            <!-- Profile & Footer Settings -->
             <div class="space-y-3 mb-6 bg-purple-50/60 p-4 rounded-2xl border border-purple-100">
                 <h3 class="font-bold text-xs uppercase tracking-wider text-purple-900">General Settings</h3>
                 <div>
@@ -127,15 +114,15 @@
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Session Expiry Time (Customer Auto-Logout)</label>
                     <select id="adminExpiryMinutes" class="w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
                         <option value="5">5 Minutes</option>
-                        <option value="15">15 Minutes (Recommended)</option>
+                        <option value="15">15 Minutes</option>
                         <option value="30">30 Minutes</option>
                         <option value="60">1 Hour</option>
-                        <option value="0">Never Expire (Keep Always Active)</option>
+                        <option value="0">Never Expire</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Footer Text (Unified)</label>
-                    <input type="text" id="adminFooterText" placeholder="Provided by Smart Cards" class="w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Footer Text</label>
+                    <input type="text" id="adminFooterText" class="w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
@@ -144,12 +131,11 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Connect Button URL</label>
-                        <input type="text" id="adminConnectUrl" placeholder="https://..." class="w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <input type="text" id="adminConnectUrl" class="w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
                 </div>
             </div>
 
-            <!-- Admin Password Security Section -->
             <div class="space-y-3 mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                 <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700">Change Admin Password</h3>
                 <div>
@@ -158,18 +144,14 @@
                 </div>
             </div>
 
-            <!-- Dynamic Buttons Editor -->
             <div class="space-y-4">
                 <div class="flex justify-between items-center border-b pb-2">
-                    <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700">Manage Buttons (Reorder & Edit)</h3>
+                    <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700">Manage Buttons</h3>
                     <button onclick="addNewLinkItem()" class="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 shadow-sm">
                         <i class="fa-solid fa-plus"></i> Add New Button
                     </button>
                 </div>
-
-                <div id="adminLinksContainer" class="space-y-3">
-                    <!-- Dynamic forms inserted via JavaScript -->
-                </div>
+                <div id="adminLinksContainer" class="space-y-3"></div>
             </div>
 
             <button onclick="saveAdminChanges()" class="w-full mt-6 bg-purple-700 hover:bg-purple-800 text-white font-bold py-3 rounded-xl shadow-lg transition-all">
@@ -179,14 +161,19 @@
     </div>
 
     <script>
-        const STORAGE_KEY = "nfc_digital_card_data_v5";
-        const PASS_KEY = "nfc_digital_card_pass_v5";
-        const SESSION_START_KEY = "nfc_card_session_start_v5";
+        const firebaseConfig = {
+            apiKey: "AIzaSyDLk_V1n8MNKIAOOICKiSp-WwO_FSMHBS8",
+            databaseURL: "https://smart-nfc-a38ca-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const dbRef = database.ref('cardDataStudio');
 
+        const SESSION_START_KEY = "nfc_card_session_start_v5";
         const syncChannel = new BroadcastChannel('nfc_card_sync_v5');
-        let adminPassword = localStorage.getItem(PASS_KEY) || "123456";
 
         let defaultCardData = {
+            adminPin: "123456",
             title: "Dream Studio",
             subtitle: "Follow • Connect • Explore",
             logoUrl: "",
@@ -204,13 +191,18 @@
         };
 
         let cardData = defaultCardData;
-        try {
-            const savedData = localStorage.getItem(STORAGE_KEY);
-            if (savedData) {
-                cardData = JSON.parse(savedData);
-            }
-        } catch (e) {
-            console.error("Storage error", e);
+
+        function loadFirebaseData() {
+            dbRef.on('value', (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    cardData = val;
+                } else {
+                    dbRef.set(defaultCardData);
+                }
+                renderCard();
+                checkSessionExpiry();
+            });
         }
 
         function handleLogoUpload(event) {
@@ -235,7 +227,6 @@
                         canvas.height = height;
                         ctx.drawImage(img, 0, 0, width, height);
                         const optimizedBase64 = canvas.toDataURL('image/jpeg', 0.8);
-
                         document.getElementById('adminLogoUrl').value = optimizedBase64;
                         const logoContainer = document.getElementById('profileLogoContainer');
                         if(logoContainer) {
@@ -269,7 +260,6 @@
                         canvas.height = height;
                         ctx.drawImage(img, 0, 0, width, height);
                         const optimizedBase64 = canvas.toDataURL('image/jpeg', 0.8);
-
                         const hiddenInput = document.getElementById(`linkImg_${id}`);
                         if(hiddenInput) hiddenInput.value = optimizedBase64;
                         updateLinkData(id, 'customImg', optimizedBase64);
@@ -286,13 +276,11 @@
                 if(sessionEl) sessionEl.classList.add('hidden');
                 return;
             }
-
             let sessionStart = sessionStorage.getItem(SESSION_START_KEY);
             if (!sessionStart) {
                 sessionStart = Date.now().toString();
                 sessionStorage.setItem(SESSION_START_KEY, sessionStart);
             }
-
             const elapsedMinutes = (Date.now() - parseInt(sessionStart)) / (1000 * 60);
             const sessionEl = document.getElementById('sessionExpiredScreen');
             if (sessionEl) {
@@ -313,21 +301,9 @@
 
         syncChannel.onmessage = function(event) {
             if (event.data && event.data.type === 'UPDATE_CARD_DATA') {
-                cardData = event.data.payload;
-                renderCard();
-                checkSessionExpiry();
+                loadFirebaseData();
             }
         };
-
-        window.addEventListener('storage', function(e) {
-            if (e.key === STORAGE_KEY && e.newValue) {
-                try {
-                    cardData = JSON.parse(e.newValue);
-                    renderCard();
-                    checkSessionExpiry();
-                } catch(err) {}
-            }
-        });
 
         function openPinModal() {
             const pinInput = document.getElementById('adminPinInput');
@@ -347,7 +323,7 @@
         function verifyAdminPin() {
             const pinInput = document.getElementById('adminPinInput');
             const enteredPin = pinInput ? pinInput.value.trim() : "";
-            if (enteredPin === adminPassword) {
+            if (enteredPin === (cardData.adminPin || "123456")) {
                 closePinModal();
                 openAdminModal();
             } else {
@@ -369,19 +345,15 @@
 
         function renderCard() {
             const titleEl = document.getElementById('displayTitle');
-            if(titleEl) titleEl.innerText = cardData.title;
-
+            if(titleEl) titleEl.innerText = cardData.title || "Dream Studio";
             const subEl = document.getElementById('displaySubtitle');
-            if(subEl) subEl.innerText = cardData.subtitle;
-
+            if(subEl) subEl.innerText = cardData.subtitle || "";
             const footerTxtEl = document.getElementById('displayFooterText');
             if(footerTxtEl) footerTxtEl.innerText = cardData.footerText || "Provided by Smart Cards";
-
             const connTxtEl = document.getElementById('displayConnectText');
-            if(connTxtEl) connTxtEl.innerText = cardData.connectText;
-
+            if(connTxtEl) connTxtEl.innerText = cardData.connectText || "Connect";
             const contactLinkEl = document.getElementById('displayContactLink');
-            if(contactLinkEl) contactLinkEl.href = cardData.connectUrl;
+            if(contactLinkEl) contactLinkEl.href = cardData.connectUrl || "#";
 
             const logoContainer = document.getElementById('profileLogoContainer');
             if (logoContainer) {
@@ -405,7 +377,6 @@
                 cardData.links.forEach(link => {
                     let hrefAttr = "#";
                     let isClickable = true;
-
                     if (link.type === 'whatsapp') {
                         const cleanNum = link.value ? link.value.replace(/[^0-9]/g, '') : '';
                         hrefAttr = `https://wa.me/${cleanNum}`;
@@ -417,13 +388,13 @@
 
                     let iconContent = link.customImg && link.customImg.trim() !== "" 
                         ? `<img src="${link.customImg}" class="w-full h-full object-cover rounded-xl" onerror="this.onerror=null; this.parentNode.innerHTML='<i class=\\'${link.iconClass} text-xl\\'></i>';">`
-                        : `<i class="${link.iconClass} text-xl"></i>`;
+                        : `<i class="${link.iconClass || 'fa-solid fa-globe'} text-xl"></i>`;
 
                     if (isClickable) {
                         container.innerHTML += `
                         <a href="${hrefAttr}" target="_blank" class="w-full bg-white/95 backdrop-blur rounded-2xl p-4 flex items-center justify-between shadow-md border border-white hover:scale-[1.02] active:scale-[0.98] transition-all">
                             <div class="flex items-center space-x-4">
-                                <div class="w-11 h-11 rounded-xl ${link.bgClass} flex items-center justify-center text-white shadow-sm overflow-hidden">
+                                <div class="w-11 h-11 rounded-xl ${link.bgClass || 'bg-purple-600 text-white'} flex items-center justify-center shadow-sm overflow-hidden">
                                     ${iconContent}
                                 </div>
                                 <span class="font-bold text-base text-slate-900">${link.title}</span>
@@ -433,7 +404,7 @@
                     } else {
                         container.innerHTML += `
                         <div class="w-full bg-white/95 backdrop-blur rounded-2xl p-4 flex items-center space-x-4 shadow-md border border-white">
-                            <div class="w-11 h-11 rounded-xl ${link.bgClass} flex items-center justify-center shadow-sm overflow-hidden">
+                            <div class="w-11 h-11 rounded-xl ${link.bgClass || 'bg-slate-100 text-slate-800'} flex items-center justify-center shadow-sm overflow-hidden">
                                 ${iconContent}
                             </div>
                             <div class="text-left">
@@ -448,28 +419,21 @@
 
         function renderAdminInputs() {
             const titleIn = document.getElementById('adminTitle');
-            if(titleIn) titleIn.value = cardData.title;
-
+            if(titleIn) titleIn.value = cardData.title || "";
             const subIn = document.getElementById('adminSubtitle');
-            if(subIn) subIn.value = cardData.subtitle;
-
+            if(subIn) subIn.value = cardData.subtitle || "";
             const logoUrlIn = document.getElementById('adminLogoUrl');
             if(logoUrlIn) logoUrlIn.value = cardData.logoUrl || "";
-
             const logoFileIn = document.getElementById('adminLogoFile');
             if(logoFileIn) logoFileIn.value = "";
-
             const expiryIn = document.getElementById('adminExpiryMinutes');
             if(expiryIn) expiryIn.value = cardData.expiryMinutes || 0;
-
             const footerTxtIn = document.getElementById('adminFooterText');
             if(footerTxtIn) footerTxtIn.value = cardData.footerText || "Provided by Smart Cards";
-
             const connTxtIn = document.getElementById('adminConnectText');
-            if(connTxtIn) connTxtIn.value = cardData.connectText;
-
+            if(connTxtIn) connTxtIn.value = cardData.connectText || "Connect";
             const connUrlIn = document.getElementById('adminConnectUrl');
-            if(connUrlIn) connUrlIn.value = cardData.connectUrl;
+            if(connUrlIn) connUrlIn.value = cardData.connectUrl || "";
 
             const container = document.getElementById('adminLinksContainer');
             if (!container) return;
@@ -492,11 +456,11 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500">Label Text</label>
-                                <input type="text" value="${item.title}" onchange="updateLinkData(${item.id}, 'title', this.value)" class="w-full px-2 py-1 border rounded text-xs">
+                                <input type="text" value="${item.title || ''}" onchange="updateLinkData(${item.id}, 'title', this.value)" class="w-full px-2 py-1 border rounded text-xs">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-semibold text-slate-500">${item.type === 'whatsapp' ? 'Phone Number' : item.type === 'info' ? 'Display Text' : 'URL Link'}</label>
-                                <input type="text" value="${item.value}" onchange="updateLinkData(${item.id}, 'value', this.value)" class="w-full px-2 py-1 border rounded text-xs">
+                                <input type="text" value="${item.value || ''}" onchange="updateLinkData(${item.id}, 'value', this.value)" class="w-full px-2 py-1 border rounded text-xs">
                             </div>
                         </div>
                         <div>
@@ -531,6 +495,7 @@
 
         function addNewLinkItem() {
             const newId = Date.now();
+            if (!cardData.links) cardData.links = [];
             cardData.links.push({
                 id: newId,
                 type: "custom",
@@ -547,52 +512,42 @@
             try {
                 const titleIn = document.getElementById('adminTitle');
                 if(titleIn) cardData.title = titleIn.value;
-
                 const subIn = document.getElementById('adminSubtitle');
                 if(subIn) cardData.subtitle = subIn.value;
-                
                 const uploadedLogo = document.getElementById('adminLogoUrl');
                 if (uploadedLogo && uploadedLogo.value.trim() !== "") {
                     cardData.logoUrl = uploadedLogo.value;
                 }
-
                 const expiryIn = document.getElementById('adminExpiryMinutes');
                 if(expiryIn) cardData.expiryMinutes = parseInt(expiryIn.value || 0);
-
                 const footerIn = document.getElementById('adminFooterText');
                 if(footerIn) cardData.footerText = footerIn.value;
-
                 const connTxtIn = document.getElementById('adminConnectText');
                 if(connTxtIn) cardData.connectText = connTxtIn.value;
-
                 const connUrlIn = document.getElementById('adminConnectUrl');
                 if(connUrlIn) cardData.connectUrl = connUrlIn.value;
-
                 const newPassIn = document.getElementById('adminNewPass');
                 if (newPassIn && newPassIn.value.trim() !== "") {
-                    adminPassword = newPassIn.value.trim();
-                    localStorage.setItem(PASS_KEY, adminPassword);
+                    cardData.adminPin = newPassIn.value.trim();
                     newPassIn.value = "";
                 }
 
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(cardData));
-
-                syncChannel.postMessage({
-                    type: 'UPDATE_CARD_DATA',
-                    payload: cardData
+                dbRef.set(cardData).then(() => {
+                    syncChannel.postMessage({ type: 'UPDATE_CARD_DATA' });
+                    renderCard();
+                    checkSessionExpiry();
+                    closeAdminModal();
+                    alert("Changes saved & synced to Firebase successfully!");
+                }).catch(err => {
+                    alert("Firebase save error: " + err.message);
                 });
-
-                renderCard();
-                checkSessionExpiry();
-                closeAdminModal();
             } catch (err) {
-                alert("Storage limit reached or error saving. Please use a slightly smaller image.");
+                alert("Error saving changes. Please try again.");
             }
         }
 
         window.onload = function() {
-            renderCard();
-            checkSessionExpiry();
+            loadFirebaseData();
             setInterval(checkSessionExpiry, 30000);
         };
     </script>

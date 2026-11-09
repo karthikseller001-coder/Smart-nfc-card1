@@ -80,40 +80,31 @@
 
     <script>
         const cardData = {
-            cardId: "001", 
+            cardId: "001", // కార్డ్ నంబర్ (001, 002, 003...)
             versionCode: "SYS-VER: 01-2026-CARD001", 
-            title: "VKS Studio",
+            title: "Dream Studio",
             subtitle: "Follow • Connect • Explore",
             logoUrl: "", 
             footerText: "Provided by Smart Cards",
-            connectText: "Contact",
+            connectText: "Connect",
             connectUrl: "https://instagram.com",
 
-            // 404 Screen Editable 
+            // 404 Screen Editable Text Settings
             notFoundTitle: "404",
             notFoundSubtitle: "Not Found",
             notFoundMessage: "The resource requested could not be found on this server!",
 
-            // Access Control 
-            allowQRScan: true,   
-            allowDirectLink: true, 
+            // Access Control Rules (Yes/No - true/false)
+            allowQRScan: true,     // true: QR స్కాన్ చేసినప్పుడు అనుమతించు
+            allowDirectLink: true, // true: డైరెక్ట్ లింక్ ఓపెన్ చేసినప్పుడు అనుమతించు
 
             session: {
-                expiryMinutes: 0 
+                expiryMinutes: 0 // 0 ఉంటే ఎక్స్‌పైర్ అవ్వదు. నిమిషాలు పెడితే స్కాన్ చేసినప్పటి నుండి ఆ టైమ్‌కి క్లోజ్ అవుతుంది.
             },
 
             links: [
                 { 
                     id: 1, 
-                    type: "instagram", 
-                    title: "Instagram", 
-                    value: "https://instagram.com", 
-                    iconClass: "fa-brands fa-instagram", 
-                    customImg: "", 
-                    bgClass: "bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white" 
-                },
-                { 
-                    id: 5, 
                     type: "instagram", 
                     title: "Instagram", 
                     value: "https://instagram.com", 
@@ -148,7 +139,6 @@
                     customImg: "", 
                     bgClass: "bg-white text-rose-500 border border-slate-200" 
                 }
-                { 
             ]
         };
 
@@ -179,7 +169,7 @@
                 return;
             }
 
-            // QR 
+            // QR ద్వారా ఓపెన్ అయితే session సేవ్‌ చేసి URL క్లీన్ చేయండి
             if (isQRScan) {
                 localStorage.setItem(SESSION_START_KEY, Date.now().toString());
                 window.history.replaceState({}, document.title, window.location.pathname);

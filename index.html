@@ -1,14 +1,16 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart NFC Digital Card Studio</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -20,25 +22,31 @@
             }
         }
     </script>
+    <style>
+        /* Smooth transitions for interactive elements */
+        .card-shadow {
+            box-shadow: 0 20px 40px -15px rgba(30, 27, 75, 0.15);
+        }
+    </style>
 </head>
 <body class="bg-gradient-to-b from-purple-300 via-indigo-100 to-purple-300 text-slate-800 font-sans min-h-screen flex flex-col items-center justify-center p-0 m-0 antialiased selection:bg-purple-500 selection:text-white">
 
-    <div class="w-full max-w-md min-h-screen flex flex-col justify-between pt-6 pb-6 px-6 relative overflow-hidden bg-gradient-to-b from-purple-200 via-indigo-50 to-purple-200 shadow-2xl">
+    <!-- Digital Card Content Container -->
+    <div id="cardContentWrapper" class="w-full max-w-md min-h-screen flex flex-col justify-between pt-6 pb-6 px-6 relative overflow-hidden bg-gradient-to-b from-purple-200 via-indigo-50 to-purple-200 card-shadow">
         
+        <!-- Profile Header & Logo -->
         <div class="text-center mt-2 relative flex flex-col items-center">
-            <div id="profileLogoContainer" class="w-24 h-24 mx-auto rounded-full bg-[#1e1b4b] flex items-center justify-center text-white shadow-2xl mb-3 border-4 border-white/70 overflow-hidden">
-                <svg viewBox="0 0 100 100" class="w-14 h-14 fill-none stroke-white stroke-[2.5] stroke-linecap-round stroke-linejoin-round">
-                    <path d="M50,22 C40,40 42,65 50,70 C58,65 60,40 50,22 Z" />
-                    <path d="M50,70 C30,65 20,45 28,30 C38,40 45,55 50,70 Z" />
-                    <path d="M50,70 C70,65 80,45 72,30 C62,40 55,55 50,70 Z" />
-                </svg>
+            <div id="profileLogoContainer" class="w-24 h-24 mx-auto rounded-full bg-[#1e1b4b] flex items-center justify-center text-white shadow-2xl mb-3 border-4 border-white/70 overflow-hidden aspect-square">
+                <!-- SVG Fallback or Image populated by JS -->
             </div>
-            <h1 id="displayTitle" class="font-extrabold text-3xl text-[#1e1b4b] tracking-tight">Loading...</h1>
-            <p id="displaySubtitle" class="text-sm font-bold text-slate-700 mt-1">Follow • Connect • Explore</p>
+            <h1 id="displayTitle" class="font-extrabold text-3xl text-[#1e1b4b] tracking-tight"></h1>
+            <p id="displaySubtitle" class="text-sm font-bold text-slate-700 mt-1"></p>
         </div>
 
+        <!-- Rendered Social & Information Links List -->
         <div id="linksRenderList" class="w-full space-y-3.5 my-4"></div>
 
+        <!-- Thank You Footer Banner -->
         <div class="w-full py-3.5 text-center bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-[2rem] shadow-lg mt-auto px-6 mb-3">
             <p id="displayFooterMsg" class="text-sm font-bold tracking-wide flex items-center justify-center gap-1.5">
                 <span>Thank you for visiting!</span>
@@ -46,319 +54,153 @@
             </p>
         </div>
 
+        <!-- Bottom Copyright / Provider Bar -->
         <div class="w-full flex items-center justify-between pt-1 border-t border-purple-300/60 text-xs font-semibold px-1">
             <div class="flex items-center text-slate-700 text-xs">
-                <button onclick="openPinModal()" class="w-2.5 h-2.5 rounded-full bg-purple-500/25 hover:bg-purple-600 focus:outline-none transition-colors mr-1.5 inline-block cursor-pointer" title="Admin Login"></button>
                 <span id="displayFooterText" class="text-slate-800 text-xs font-semibold">Provided by Smart Cards</span>
             </div>
-            <a id="displayContactLink" href="https://instagram.com" target="_blank" class="text-blue-600 hover:text-blue-800 font-bold text-xs transition-colors cursor-pointer">
+            <a id="displayContactLink" href="#" target="_blank" class="text-blue-600 hover:text-blue-800 font-bold text-xs transition-colors cursor-pointer">
                 <span id="displayConnectText">Connect</span>
             </a>
         </div>
 
     </div>
 
-    <div id="sessionExpiredScreen" class="fixed inset-0 bg-gradient-to-b from-purple-900 via-slate-900 to-indigo-950 z-40 hidden flex flex-col items-center justify-center p-6 text-center text-white">
-        <div class="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center text-rose-400 text-3xl mb-4 border border-white/20 shadow-2xl">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-        </div>
-        <h2 class="text-2xl font-black mb-2">Session Expired</h2>
-        <p class="text-purple-200 text-sm max-w-xs mb-2 font-semibold">Thank you for coming! Visit again.</p>
-        <p class="text-purple-300 text-xs max-w-xs mb-6 leading-relaxed">Please scan the QR code again at the counter when you visit our shop.</p>
-        <button onclick="restartSession()" class="px-6 py-2.5 bg-white text-purple-950 font-bold text-xs rounded-xl shadow-lg hover:bg-purple-50 transition-all">
-            Scan Again / Refresh
-        </button>
-    </div>
-
-    <div id="pinAuthModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-xs rounded-3xl p-6 text-center shadow-2xl border border-purple-100">
-            <h3 class="text-lg font-extrabold text-slate-800 mb-4">Enter 6-Digit PIN</h3>
-            <div class="mb-5">
-                <input type="password" id="adminPinInput" maxlength="6" placeholder="••••••" class="w-full text-center tracking-[0.5em] text-xl font-bold py-2.5 border-2 border-purple-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                <p id="pinErrorMsg" class="text-xs text-rose-500 font-bold mt-2 hidden">Incorrect PIN!</p>
-            </div>
-            <div class="flex gap-3">
-                <button onclick="closePinModal()" class="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition-all">Cancel</button>
-                <button onclick="verifyAdminPin()" class="w-1/2 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm rounded-xl shadow-md transition-all">Login</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="adminModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-lg rounded-3xl p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div class="flex justify-between items-center mb-5 border-b pb-3">
-                <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-user-gear text-purple-600"></i> Admin Panel
-                </h2>
-                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <div class="space-y-3 mb-6 bg-purple-50/60 p-4 rounded-2xl border border-purple-100">
-                <h3 class="font-bold text-xs uppercase tracking-wider text-purple-900">General Settings</h3>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Title</label>
-                    <input type="text" id="adminTitle" class="w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Subtitle</label>
-                    <input type="text" id="adminSubtitle" class="w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Upload Profile Logo / Picture</label>
-                    <input type="file" id="adminLogoFile" accept="image/*" onchange="handleLogoUpload(event)" class="w-full px-3 py-2 border rounded-xl text-xs bg-white text-slate-700 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-purple-600 file:text-white hover:file:bg-purple-700 cursor-pointer">
-                    <input type="hidden" id="adminLogoUrl">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Session Expiry Time (Customer Auto-Logout)</label>
-                    <select id="adminExpiryMinutes" class="w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <option value="5">5 Minutes</option>
-                        <option value="15">15 Minutes</option>
-                        <option value="30">30 Minutes</option>
-                        <option value="60">1 Hour</option>
-                        <option value="0">Never Expire</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Footer Text</label>
-                    <input type="text" id="adminFooterText" class="w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Connect Text</label>
-                        <input type="text" id="adminConnectText" class="w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Connect Button URL</label>
-                        <input type="text" id="adminConnectUrl" class="w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
-                    </div>
-                </div>
-            </div>
-
-            <div class="space-y-3 mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700">Change Admin Password</h3>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">New Admin Password</label>
-                    <input type="password" id="adminNewPass" placeholder="Leave empty to keep current password" class="w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
-                </div>
-            </div>
-
-            <div class="space-y-4">
-                <div class="flex justify-between items-center border-b pb-2">
-                    <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700">Manage Buttons</h3>
-                    <button onclick="addNewLinkItem()" class="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 shadow-sm">
-                        <i class="fa-solid fa-plus"></i> Add New Button
-                    </button>
-                </div>
-                <div id="adminLinksContainer" class="space-y-3"></div>
-            </div>
-
-            <button onclick="saveAdminChanges()" class="w-full mt-6 bg-purple-700 hover:bg-purple-800 text-white font-bold py-3 rounded-xl shadow-lg transition-all">
-                Save & Apply Changes
-            </button>
-        </div>
+    <!-- 404 Not Found Minimalist Screen (Recreates exact error view) -->
+    <div id="notFoundScreen" class="fixed inset-0 bg-black text-[#888888] z-50 hidden flex flex-col items-center justify-center p-6 text-center font-sans select-none">
+        <h1 class="text-6xl font-medium text-[#666666] m-0 tracking-tight">404</h1>
+        <h2 class="text-2xl font-normal my-2.5 text-[#aaaaaa]">Not Found</h2>
+        <p class="text-sm text-[#666666] m-0 max-w-md">The resource requested could not be found on this server!</p>
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDLk_V1n8MNKIAOOICKiSp-WwO_FSMHBS8",
-            databaseURL: "https://smart-nfc-a38ca-default-rtdb.firebaseio.com/"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const dbRef = database.ref('cardDataStudio');
-
-        const SESSION_START_KEY = "nfc_card_session_start_v5";
-        const syncChannel = new BroadcastChannel('nfc_card_sync_v5');
-
-        let defaultCardData = {
-            adminPin: "123456",
+        // Central Digital Card Data Configuration
+        const cardData = {
             title: "Dream Studio",
             subtitle: "Follow • Connect • Explore",
-            logoUrl: "",
-            expiryMinutes: 0,
+            logoUrl: "", // Optional image URL for logo
             footerText: "Provided by Smart Cards",
             connectText: "Connect",
             connectUrl: "https://instagram.com",
+
+            // Session expiry configuration
+            session: {
+                expiryMinutes: 0 // 0 అని పెడితే టైమర్ ఆగిపోతుంది (ఎప్పుడూ ఓపెన్ లోనే ఉంటుంది)
+            },
+
             links: [
-                { id: 1, type: "instagram", title: "Instagram", value: "https://instagram.com", iconClass: "fa-brands fa-instagram", customImg: "", bgClass: "bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600" },
-                { id: 2, type: "whatsapp", title: "WhatsApp", value: "+919876543210", iconClass: "fa-brands fa-whatsapp", customImg: "", bgClass: "bg-emerald-500" },
-                { id: 3, type: "facebook", title: "Facebook", value: "https://facebook.com", iconClass: "fa-brands fa-facebook-f", customImg: "", bgClass: "bg-blue-600" },
-                { id: 4, type: "google", title: "Google", value: "https://google.com", iconClass: "fa-brands fa-google", customImg: "", bgClass: "bg-white text-rose-500 border border-slate-200" },
-                { id: 5, type: "info", title: "Business Hours", value: "9 AM – 9 PM", iconClass: "fa-regular fa-clock", customImg: "", bgClass: "bg-slate-100 text-slate-800" }
+                { 
+                    id: 1, 
+                    type: "instagram", 
+                    title: "Instagram", 
+                    value: "https://instagram.com", 
+                    iconClass: "fa-brands fa-instagram", 
+                    customImg: "", 
+                    bgClass: "bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white" 
+                },
+                { 
+                    id: 2, 
+                    type: "whatsapp", 
+                    title: "WhatsApp", 
+                    value: "+919876543210", 
+                    iconClass: "fa-brands fa-whatsapp", 
+                    customImg: "", 
+                    bgClass: "bg-emerald-500 text-white" 
+                },
+                { 
+                    id: 3, 
+                    type: "facebook", 
+                    title: "Facebook", 
+                    value: "https://facebook.com", 
+                    iconClass: "fa-brands fa-facebook-f", 
+                    customImg: "", 
+                    bgClass: "bg-blue-600 text-white" 
+                },
+                { 
+                    id: 4, 
+                    type: "google", 
+                    title: "Google", 
+                    value: "https://google.com", 
+                    iconClass: "fa-brands fa-google", 
+                    customImg: "", 
+                    bgClass: "bg-white text-rose-500 border border-slate-200" 
+                },
+                { 
+                    id: 5, 
+                    type: "info", 
+                    title: "Business Hours", 
+                    value: "9 AM – 9 PM", 
+                    iconClass: "fa-regular fa-clock", 
+                    customImg: "", 
+                    bgClass: "bg-slate-100 text-slate-800" 
+                }
             ]
         };
 
-        let cardData = defaultCardData;
+        // Unique Key used for tracking overall session lifetime across refreshes
+        const SESSION_START_KEY = "nfc_card_persistent_session_start";
 
-        function loadFirebaseData() {
-            dbRef.on('value', (snapshot) => {
-                const val = snapshot.val();
-                if (val) {
-                    cardData = val;
-                } else {
-                    dbRef.set(defaultCardData);
-                }
-                renderCard();
-                checkSessionExpiry();
-            });
-        }
-
-        function handleLogoUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        let width = img.width;
-                        let height = img.height;
-                        const maxDim = 300;
-                        if (width > height) {
-                            if (width > maxDim) { height *= maxDim / width; width = maxDim; }
-                        } else {
-                            if (height > maxDim) { width *= maxDim / height; height = maxDim; }
-                        }
-                        canvas.width = width;
-                        canvas.height = height;
-                        ctx.drawImage(img, 0, 0, width, height);
-                        const optimizedBase64 = canvas.toDataURL('image/jpeg', 0.8);
-                        document.getElementById('adminLogoUrl').value = optimizedBase64;
-                        const logoContainer = document.getElementById('profileLogoContainer');
-                        if(logoContainer) {
-                            logoContainer.innerHTML = `<img src="${optimizedBase64}" class="w-full h-full object-cover rounded-full">`;
-                        }
-                    };
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function handleLinkImageUpload(event, id) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        let width = img.width;
-                        let height = img.height;
-                        const maxDim = 300;
-                        if (width > height) {
-                            if (width > maxDim) { height *= maxDim / width; width = maxDim; }
-                        } else {
-                            if (height > maxDim) { width *= maxDim / height; height = maxDim; }
-                        }
-                        canvas.width = width;
-                        canvas.height = height;
-                        ctx.drawImage(img, 0, 0, width, height);
-                        const optimizedBase64 = canvas.toDataURL('image/jpeg', 0.8);
-                        const hiddenInput = document.getElementById(`linkImg_${id}`);
-                        if(hiddenInput) hiddenInput.value = optimizedBase64;
-                        updateLinkData(id, 'customImg', optimizedBase64);
-                    };
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
+        /**
+         * Checks whether the session timer has exceeded the allowed time limit.
+         * Resets session if URL has a scan parameter (e.g. ?scan=true or dynamic QR scan).
+         */
         function checkSessionExpiry() {
-            const expiryMins = parseInt(cardData.expiryMinutes || 0);
+            const expiryMins = parseFloat(cardData.session.expiryMinutes || 0);
+            const wrapperEl = document.getElementById('cardContentWrapper');
+            const notFoundEl = document.getElementById('notFoundScreen');
+            
+            if (!wrapperEl || !notFoundEl) return;
+
+            // expiryMinutes 0 గా ఉంటే టైమర్ లాజిక్ రన్ అవ్వదు (ఎప్పుడూ కార్డ్ డిస్‌ప్లే అవుతుంది)
             if (expiryMins <= 0) {
-                const sessionEl = document.getElementById('sessionExpiredScreen');
-                if(sessionEl) sessionEl.classList.add('hidden');
+                wrapperEl.classList.remove('hidden');
+                notFoundEl.classList.add('hidden');
                 return;
             }
-            let sessionStart = sessionStorage.getItem(SESSION_START_KEY);
+
+            // QR కోడ్ స్కాన్ చేసినప్పుడు (URL లో ?scan లేదా కొత్త పారామీటర్ ఉంటే) లేదా మొదటిసారి వస్తే సెషన్ రీసెట్ అవుతుంది
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('scan') || urlParams.has('t')) {
+                localStorage.setItem(SESSION_START_KEY, Date.now().toString());
+                // URL నుండి పారామీటర్‌ని క్లీన్ చేయడం కోసం
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            let sessionStart = localStorage.getItem(SESSION_START_KEY);
+            
+            // Set timestamp when user opens the page for the first time
             if (!sessionStart) {
                 sessionStart = Date.now().toString();
-                sessionStorage.setItem(SESSION_START_KEY, sessionStart);
+                localStorage.setItem(SESSION_START_KEY, sessionStart);
             }
-            const elapsedMinutes = (Date.now() - parseInt(sessionStart)) / (1000 * 60);
-            const sessionEl = document.getElementById('sessionExpiredScreen');
-            if (sessionEl) {
-                if (elapsedMinutes >= expiryMins) {
-                    sessionEl.classList.remove('hidden');
-                } else {
-                    sessionEl.classList.add('hidden');
-                }
-            }
-        }
 
-        function restartSession() {
-            sessionStorage.setItem(SESSION_START_KEY, Date.now().toString());
-            const sessionEl = document.getElementById('sessionExpiredScreen');
-            if(sessionEl) sessionEl.classList.add('hidden');
-            renderCard();
-        }
+            const elapsedMinutes = (Date.now() - parseInt(sessionStart, 10)) / (1000 * 60);
 
-        syncChannel.onmessage = function(event) {
-            if (event.data && event.data.type === 'UPDATE_CARD_DATA') {
-                loadFirebaseData();
-            }
-        };
-
-        function openPinModal() {
-            const pinInput = document.getElementById('adminPinInput');
-            if(pinInput) pinInput.value = "";
-            const errEl = document.getElementById('pinErrorMsg');
-            if(errEl) errEl.classList.add('hidden');
-            const modalEl = document.getElementById('pinAuthModal');
-            if(modalEl) modalEl.classList.remove('hidden');
-            setTimeout(() => { if(pinInput) pinInput.focus(); }, 100);
-        }
-
-        function closePinModal() {
-            const modalEl = document.getElementById('pinAuthModal');
-            if(modalEl) modalEl.classList.add('hidden');
-        }
-
-        function verifyAdminPin() {
-            const pinInput = document.getElementById('adminPinInput');
-            const enteredPin = pinInput ? pinInput.value.trim() : "";
-            if (enteredPin === (cardData.adminPin || "123456")) {
-                closePinModal();
-                openAdminModal();
+            // If time limit passed, show 404
+            if (elapsedMinutes >= expiryMins) {
+                wrapperEl.classList.add('hidden');
+                notFoundEl.classList.remove('hidden');
             } else {
-                const errEl = document.getElementById('pinErrorMsg');
-                if(errEl) errEl.classList.remove('hidden');
+                wrapperEl.classList.remove('hidden');
+                notFoundEl.classList.add('hidden');
             }
         }
 
-        function openAdminModal() {
-            const adminModal = document.getElementById('adminModal');
-            if(adminModal) adminModal.classList.remove('hidden');
-            renderAdminInputs();
-        }
-
-        function closeAdminModal() {
-            const adminModal = document.getElementById('adminModal');
-            if(adminModal) adminModal.classList.add('hidden');
-        }
-
+        /**
+         * Renders profile title, avatar logo, footer info, and link items into the DOM.
+         */
         function renderCard() {
-            const titleEl = document.getElementById('displayTitle');
-            if(titleEl) titleEl.innerText = cardData.title || "Dream Studio";
-            const subEl = document.getElementById('displaySubtitle');
-            if(subEl) subEl.innerText = cardData.subtitle || "";
-            const footerTxtEl = document.getElementById('displayFooterText');
-            if(footerTxtEl) footerTxtEl.innerText = cardData.footerText || "Provided by Smart Cards";
-            const connTxtEl = document.getElementById('displayConnectText');
-            if(connTxtEl) connTxtEl.innerText = cardData.connectText || "Connect";
-            const contactLinkEl = document.getElementById('displayContactLink');
-            if(contactLinkEl) contactLinkEl.href = cardData.connectUrl || "#";
+            document.getElementById('displayTitle').innerText = cardData.title || "";
+            document.getElementById('displaySubtitle').innerText = cardData.subtitle || "";
+            document.getElementById('displayFooterText').innerText = cardData.footerText || "";
+            document.getElementById('displayConnectText').innerText = cardData.connectText || "";
+            document.getElementById('displayContactLink').href = cardData.connectUrl || "#";
 
+            // Render profile logo icon / image
             const logoContainer = document.getElementById('profileLogoContainer');
             if (logoContainer) {
                 if (cardData.logoUrl && cardData.logoUrl.trim() !== "") {
-                    logoContainer.innerHTML = `<img src="${cardData.logoUrl}" class="w-full h-full object-cover rounded-full" onerror="this.onerror=null; this.src='https://placehold.co/100x100/1e1b4b/ffffff?text=Logo';">`;
+                    logoContainer.innerHTML = `<img src="${cardData.logoUrl}" alt="Profile Logo" class="w-full h-full object-cover rounded-full aspect-square">`;
                 } else {
                     logoContainer.innerHTML = `
                     <svg viewBox="0 0 100 100" class="w-14 h-14 fill-none stroke-white stroke-[2.5] stroke-linecap-round stroke-linejoin-round">
@@ -369,6 +211,7 @@
                 }
             }
 
+            // Render clickable and informational link items
             const container = document.getElementById('linksRenderList');
             if (!container) return;
             container.innerHTML = "";
@@ -377,6 +220,7 @@
                 cardData.links.forEach(link => {
                     let hrefAttr = "#";
                     let isClickable = true;
+
                     if (link.type === 'whatsapp') {
                         const cleanNum = link.value ? link.value.replace(/[^0-9]/g, '') : '';
                         hrefAttr = `https://wa.me/${cleanNum}`;
@@ -386,15 +230,15 @@
                         hrefAttr = link.value && link.value.startsWith('http') ? link.value : `https://${link.value || ''}`;
                     }
 
-                    let iconContent = link.customImg && link.customImg.trim() !== "" 
-                        ? `<img src="${link.customImg}" class="w-full h-full object-cover rounded-xl" onerror="this.onerror=null; this.parentNode.innerHTML='<i class=\\'${link.iconClass} text-xl\\'></i>';">`
+                    const iconContent = link.customImg && link.customImg.trim() !== "" 
+                        ? `<img src="${link.customImg}" alt="${link.title}" class="w-full h-full object-cover aspect-square rounded-xl">`
                         : `<i class="${link.iconClass || 'fa-solid fa-globe'} text-xl"></i>`;
 
                     if (isClickable) {
                         container.innerHTML += `
-                        <a href="${hrefAttr}" target="_blank" class="w-full bg-white/95 backdrop-blur rounded-2xl p-4 flex items-center justify-between shadow-md border border-white hover:scale-[1.02] active:scale-[0.98] transition-all">
+                        <a href="${hrefAttr}" target="_blank" rel="noopener noreferrer" class="w-full bg-white/95 backdrop-blur rounded-2xl p-4 flex items-center justify-between shadow-md border border-white hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
                             <div class="flex items-center space-x-4">
-                                <div class="w-11 h-11 rounded-xl ${link.bgClass || 'bg-purple-600 text-white'} flex items-center justify-center shadow-sm overflow-hidden">
+                                <div class="w-11 h-11 aspect-square rounded-xl ${link.bgClass || 'bg-purple-600 text-white'} flex items-center justify-center shadow-sm overflow-hidden flex-shrink-0">
                                     ${iconContent}
                                 </div>
                                 <span class="font-bold text-base text-slate-900">${link.title}</span>
@@ -404,7 +248,7 @@
                     } else {
                         container.innerHTML += `
                         <div class="w-full bg-white/95 backdrop-blur rounded-2xl p-4 flex items-center space-x-4 shadow-md border border-white">
-                            <div class="w-11 h-11 rounded-xl ${link.bgClass || 'bg-slate-100 text-slate-800'} flex items-center justify-center shadow-sm overflow-hidden">
+                            <div class="w-11 h-11 aspect-square rounded-xl ${link.bgClass || 'bg-slate-100 text-slate-800'} flex items-center justify-center shadow-sm overflow-hidden flex-shrink-0">
                                 ${iconContent}
                             </div>
                             <div class="text-left">
@@ -417,139 +261,14 @@
             }
         }
 
-        function renderAdminInputs() {
-            const titleIn = document.getElementById('adminTitle');
-            if(titleIn) titleIn.value = cardData.title || "";
-            const subIn = document.getElementById('adminSubtitle');
-            if(subIn) subIn.value = cardData.subtitle || "";
-            const logoUrlIn = document.getElementById('adminLogoUrl');
-            if(logoUrlIn) logoUrlIn.value = cardData.logoUrl || "";
-            const logoFileIn = document.getElementById('adminLogoFile');
-            if(logoFileIn) logoFileIn.value = "";
-            const expiryIn = document.getElementById('adminExpiryMinutes');
-            if(expiryIn) expiryIn.value = cardData.expiryMinutes || 0;
-            const footerTxtIn = document.getElementById('adminFooterText');
-            if(footerTxtIn) footerTxtIn.value = cardData.footerText || "Provided by Smart Cards";
-            const connTxtIn = document.getElementById('adminConnectText');
-            if(connTxtIn) connTxtIn.value = cardData.connectText || "Connect";
-            const connUrlIn = document.getElementById('adminConnectUrl');
-            if(connUrlIn) connUrlIn.value = cardData.connectUrl || "";
-
-            const container = document.getElementById('adminLinksContainer');
-            if (!container) return;
-            container.innerHTML = "";
-
-            if (cardData.links && Array.isArray(cardData.links)) {
-                cardData.links.forEach((item, index) => {
-                    container.innerHTML += `
-                    <div class="p-3 bg-slate-50 border rounded-2xl space-y-2 relative">
-                        <div class="flex justify-between items-center border-b pb-1.5">
-                            <span class="text-xs font-bold text-slate-700">#${index + 1} ${item.title}</span>
-                            <div class="flex items-center space-x-1">
-                                <button onclick="moveItem(${index}, -1)" class="px-2 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-xs font-bold" title="Move Up">▲</button>
-                                <button onclick="moveItem(${index}, 1)" class="px-2 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-xs font-bold" title="Move Down">▼</button>
-                                <button onclick="removeLinkItem(${item.id})" class="text-rose-500 hover:text-rose-700 text-xs font-bold ml-2">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[10px] font-semibold text-slate-500">Label Text</label>
-                                <input type="text" value="${item.title || ''}" onchange="updateLinkData(${item.id}, 'title', this.value)" class="w-full px-2 py-1 border rounded text-xs">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-semibold text-slate-500">${item.type === 'whatsapp' ? 'Phone Number' : item.type === 'info' ? 'Display Text' : 'URL Link'}</label>
-                                <input type="text" value="${item.value || ''}" onchange="updateLinkData(${item.id}, 'value', this.value)" class="w-full px-2 py-1 border rounded text-xs">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-semibold text-slate-500">Upload Icon / Picture Image (File)</label>
-                            <input type="file" accept="image/*" onchange="handleLinkImageUpload(event, ${item.id})" class="w-full px-2 py-1 border rounded text-xs bg-white cursor-pointer">
-                            <input type="hidden" id="linkImg_${item.id}" value="${item.customImg || ''}">
-                        </div>
-                    </div>`;
-                });
-            }
-        }
-
-        function moveItem(index, direction) {
-            const targetIndex = index + direction;
-            if (targetIndex >= 0 && targetIndex < cardData.links.length) {
-                const temp = cardData.links[index];
-                cardData.links[index] = cardData.links[targetIndex];
-                cardData.links[targetIndex] = temp;
-                renderAdminInputs();
-            }
-        }
-
-        function updateLinkData(id, field, value) {
-            const item = cardData.links.find(l => l.id === id);
-            if (item) item[field] = value;
-        }
-
-        function removeLinkItem(id) {
-            cardData.links = cardData.links.filter(l => l.id !== id);
-            renderAdminInputs();
-        }
-
-        function addNewLinkItem() {
-            const newId = Date.now();
-            if (!cardData.links) cardData.links = [];
-            cardData.links.push({
-                id: newId,
-                type: "custom",
-                title: "New Link / App",
-                value: "https://example.com",
-                iconClass: "fa-solid fa-globe",
-                customImg: "",
-                bgClass: "bg-purple-600 text-white"
-            });
-            renderAdminInputs();
-        }
-
-        function saveAdminChanges() {
-            try {
-                const titleIn = document.getElementById('adminTitle');
-                if(titleIn) cardData.title = titleIn.value;
-                const subIn = document.getElementById('adminSubtitle');
-                if(subIn) cardData.subtitle = subIn.value;
-                const uploadedLogo = document.getElementById('adminLogoUrl');
-                if (uploadedLogo && uploadedLogo.value.trim() !== "") {
-                    cardData.logoUrl = uploadedLogo.value;
-                }
-                const expiryIn = document.getElementById('adminExpiryMinutes');
-                if(expiryIn) cardData.expiryMinutes = parseInt(expiryIn.value || 0);
-                const footerIn = document.getElementById('adminFooterText');
-                if(footerIn) cardData.footerText = footerIn.value;
-                const connTxtIn = document.getElementById('adminConnectText');
-                if(connTxtIn) cardData.connectText = connTxtIn.value;
-                const connUrlIn = document.getElementById('adminConnectUrl');
-                if(connUrlIn) cardData.connectUrl = connUrlIn.value;
-                const newPassIn = document.getElementById('adminNewPass');
-                if (newPassIn && newPassIn.value.trim() !== "") {
-                    cardData.adminPin = newPassIn.value.trim();
-                    newPassIn.value = "";
-                }
-
-                dbRef.set(cardData).then(() => {
-                    syncChannel.postMessage({ type: 'UPDATE_CARD_DATA' });
-                    renderCard();
-                    checkSessionExpiry();
-                    closeAdminModal();
-                    alert("Changes saved & synced to Firebase successfully!");
-                }).catch(err => {
-                    alert("Firebase save error: " + err.message);
-                });
-            } catch (err) {
-                alert("Error saving changes. Please try again.");
-            }
-        }
-
+        // Initialize Card and Timers on page load
         window.onload = function() {
-            loadFirebaseData();
-            setInterval(checkSessionExpiry, 30000);
+            renderCard();
+            checkSessionExpiry();
+            // Continuously check session expiration every second
+            setInterval(checkSessionExpiry, 1000);
         };
     </script>
 </body>
 </html>
+```

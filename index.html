@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <!-- CARD_ID: CARD-001 -->
@@ -35,17 +36,17 @@
         
         <!-- Profile Header & Logo -->
         <div class="text-center mt-1 relative flex flex-col items-center shrink-0">
-            <div id="profileLogoContainer" class="w-24 h-24 mx-auto rounded-full bg-[#1e1b4b] flex items-center justify-center text-white shadow-2xl mb-2 border-4 border-white/70 overflow-hidden aspect-square">
+            <div id="profileLogoContainer" class="w-28 h-28 mx-auto rounded-full bg-[#1e1b4b] flex items-center justify-center text-white shadow-2xl mb-2 border-4 border-white/70 overflow-hidden aspect-square">
             </div>
             <h1 id="displayTitle" class="font-extrabold text-2xl text-[#1e1b4b] tracking-tight"></h1>
             <p id="displaySubtitle" class="text-xs font-bold text-slate-700 mt-0.5"></p>
         </div>
 
         <!-- Links List Section -->
-        <div id="linksRenderList" class="w-full grid grid-cols-4 gap-3 my-auto px-1 justify-items-center"></div>
+        <div id="linksRenderList" class="w-full grid grid-cols-4 gap-3 my-2 px-1 justify-items-center"></div>
 
         <!-- Thank You Banner & Footer Container (Fixed together at bottom of main screen) -->
-        <div class="w-full flex flex-col shrink-0 gap-2 mt-auto pb-1">
+        <div class="w-full flex flex-col shrink-0 gap-2 mt-auto pb-6">
             <div class="w-full py-2.5 text-center bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-[2rem] shadow-lg px-4">
                 <p id="displayFooterMsg" class="text-xs font-bold tracking-wide flex items-center justify-center gap-1.5">
                     <span>Thank you for visiting!</span>
@@ -64,7 +65,7 @@
             </div>
 
             <!-- System Version Code (Positioned below footer, visible only when scrolled up slightly) -->
-            <div class="w-full text-center pt-3 pb-1">
+            <div class="w-full text-center pt-2 pb-2">
                 <span id="displayVersionTag" class="text-[10px] font-mono text-slate-400/80 tracking-widest inline-block select-none"></span>
             </div>
         </div>
@@ -73,26 +74,33 @@
 
     <!-- 404 Not Found Minimalist Screen -->
     <div id="notFoundScreen" class="fixed inset-0 bg-black text-[#888888] z-50 hidden flex flex-col items-center justify-center p-6 text-center font-sans select-none">
-        <h1 class="text-6xl font-medium text-[#666666] m-0 tracking-tight">404</h1>
-        <h2 class="text-2xl font-normal my-2.5 text-[#aaaaaa]">Not Found</h2>
-        <p class="text-sm text-[#666666] m-0 max-w-md">The resource requested could not be found on this server!</p>
+        <h1 id="displayNotFoundTitle" class="text-6xl font-medium text-[#666666] m-0 tracking-tight">404</h1>
+        <h2 id="displayNotFoundSubtitle" class="text-2xl font-normal my-2.5 text-[#aaaaaa]">Not Found</h2>
+        <p id="displayNotFoundMessage" class="text-sm text-[#666666] m-0 max-w-md">The resource requested could not be found on this server!</p>
     </div>
 
     <script>
         const cardData = {
             cardId: "001", // కార్డ్ నంబర్ (001, 002, 003...)
-            // GitHub లో ఈ కింది లైన్‌లోని టెక్స్ట్‌ని మీకు కావలసిన నెల, సంవత్సరం, ఐడీకి మార్చుకోవచ్చు:
             versionCode: "SYS-VER: 01-2026-CARD001", 
             title: "Dream Studio",
             subtitle: "Follow • Connect • Explore",
-            // మీ GitHub లేదా Instagram/Image Raw URL ను ఇక్కడ పేస్ట్ చేయండి:
             logoUrl: "", 
             footerText: "Provided by Smart Cards",
             connectText: "Connect",
             connectUrl: "https://instagram.com",
 
+            // 404 Screen Editable Text Settings
+            notFoundTitle: "404",
+            notFoundSubtitle: "Not Found",
+            notFoundMessage: "The resource requested could not be found on this server!",
+
+            // Access Control Rules (Yes/No - true/false)
+            allowQRScan: true,     // true: QR స్కాన్ చేసినప్పుడు అనుమతించు
+            allowDirectLink: true, // true: డైరెక్ట్ లింక్ ఓపెన్ చేసినప్పుడు అనుమతించు
+
             session: {
-                expiryMinutes: 0 // 0 ఉంచడం ద్వారా ఈ వెబ్‌సైట్ ఎప్పటికీ క్లోజ్ అవ్వకుండా ఓపెన్ అయి ఉంటుంది
+                expiryMinutes: 0 // 0 ఉంటే ఎక్స్‌పైర్ అవ్వదు. నిమిషాలు పెడితే స్కాన్ చేసినప్పటి నుండి ఆ టైమ్‌కి క్లోజ్ అవుతుంది.
             },
 
             links: [
@@ -144,16 +152,35 @@
             
             if (!wrapperEl || !notFoundEl) return;
 
+            const urlParams = new URLSearchParams(window.location.search);
+            const isQRScan = urlParams.has('scan') || urlParams.has('t');
+
+            // 1. Access Control Logic (QR & Direct Link)
+            let isAccessAllowed = false;
+
+            if (isQRScan && cardData.allowQRScan) {
+                isAccessAllowed = true;
+            } else if (!isQRScan && cardData.allowDirectLink) {
+                isAccessAllowed = true;
+            }
+
+            if (!isAccessAllowed) {
+                wrapperEl.classList.add('hidden');
+                notFoundEl.classList.remove('hidden');
+                return;
+            }
+
+            // QR ద్వారా ఓపెన్ అయితే session సేవ్‌ చేసి URL క్లీన్ చేయండి
+            if (isQRScan) {
+                localStorage.setItem(SESSION_START_KEY, Date.now().toString());
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            // 2. Expiry Check Logic
             if (expiryMins <= 0) {
                 wrapperEl.classList.remove('hidden');
                 notFoundEl.classList.add('hidden');
                 return;
-            }
-
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('scan') || urlParams.has('t')) {
-                localStorage.setItem(SESSION_START_KEY, Date.now().toString());
-                window.history.replaceState({}, document.title, window.location.pathname);
             }
 
             let sessionStart = localStorage.getItem(SESSION_START_KEY);
@@ -175,6 +202,11 @@
         }
 
         function renderCard() {
+            // Update 404 Text Content
+            document.getElementById('displayNotFoundTitle').innerText = cardData.notFoundTitle || "404";
+            document.getElementById('displayNotFoundSubtitle').innerText = cardData.notFoundSubtitle || "Not Found";
+            document.getElementById('displayNotFoundMessage').innerText = cardData.notFoundMessage || "The resource requested could not be found on this server!";
+
             checkSessionExpiry();
             document.getElementById('displayTitle').innerText = cardData.title || "";
             document.getElementById('displaySubtitle').innerText = cardData.subtitle || "";
@@ -233,3 +265,4 @@
     </script>
 </body>
 </html>
+```

@@ -30,7 +30,7 @@
 </head>
 <body class="bg-gradient-to-b from-purple-300 via-indigo-100 to-purple-300 text-slate-800 font-sans min-h-screen flex flex-col items-center justify-center p-0 m-0 antialiased selection:bg-purple-500 selection:text-white">
 
-    <!-- Card Wrapper tuned to fit viewport (h-screen/max-h-screen) for zero scroll on main card body -->
+    <!-- Card Wrapper tuned to fit viewport -->
     <div id="cardContentWrapper" class="w-full max-w-md h-screen max-h-screen flex flex-col justify-between pt-4 pb-2 px-6 relative bg-gradient-to-b from-purple-200 via-indigo-50 to-purple-200 card-shadow overflow-y-auto">
         
         <!-- Profile Header & Logo -->
@@ -44,7 +44,7 @@
         <!-- Links List Section -->
         <div id="linksRenderList" class="w-full grid grid-cols-4 gap-3 my-2 px-1 justify-items-center"></div>
 
-        <!-- Thank You Banner & Footer Container (Fixed together at bottom of main screen) -->
+        <!-- Thank You Banner & Footer Container -->
         <div class="w-full flex flex-col shrink-0 gap-2 mt-auto pb-6">
             <div class="w-full py-2.5 text-center bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-[2rem] shadow-lg px-4">
                 <p id="displayFooterMsg" class="text-xs font-bold tracking-wide flex items-center justify-center gap-1.5">
@@ -63,7 +63,7 @@
                 </a>
             </div>
 
-            <!-- System Version Code (Positioned below footer, visible only when scrolled up slightly) -->
+            <!-- System Version Code -->
             <div class="w-full text-center pt-2 pb-2">
                 <span id="displayVersionTag" class="text-[10px] font-mono text-slate-400/80 tracking-widest inline-block select-none"></span>
             </div>
@@ -89,12 +89,10 @@
             connectText: "Contact",
             connectUrl: "https://instagram.com/karthik_sai_17",
 
-            // 404 Screen Editable Text Settings
             notFoundTitle: "404",
             notFoundSubtitle: "Not Found",
-            notFoundMessage: "The resource requested could not be found on this server! <br> <span style="color:white; fomt-size:18x;">Vist the shop and scan the QR again<",
+            notFoundMessage: "The resource requested could not be found on this server! <br> <span style='color:white; font-size:18px;'>Vist the shop and scan the QR again</span>",
 
-            // Access Control 
             allowQRScan: true,     
             allowDirectLink: true, 
 
@@ -102,9 +100,10 @@
                 expiryMinutes: 1
             },
 
+
             links: [
                 { 
-                    id: 1, 
+                    position: 1, 
                     type: "instagram", 
                     title: "Instagram", 
                     value: "https://instagram.com/karthik_sai_17", 
@@ -113,7 +112,7 @@
                     bgClass: "bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white" 
                 },
                 { 
-                    id: 2, 
+                    position: 2, 
                     type: "whatsapp", 
                     title: "WhatsApp", 
                     value: "wa.me/+919985656800", 
@@ -122,7 +121,7 @@
                     bgClass: "bg-emerald-500 text-white" 
                 },
                 { 
-                    id: 3, 
+                    position: 3, 
                     type: "facebook", 
                     title: "Facebook", 
                     value: "https://facebook.com", 
@@ -131,7 +130,7 @@
                     bgClass: "bg-blue-600 text-white" 
                 },
                 { 
-                    id: 4, 
+                    position: 4, 
                     type: "google", 
                     title: "Google", 
                     value: "https://search.google.com/local/writereview?placeid=ChIJ9Z6_EtxKsTsRyVvsYbmbqI4", 
@@ -154,9 +153,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             const isQRScan = urlParams.has('scan') || urlParams.has('t');
 
-            // 1. Access Control Logic (QR & Direct Link)
             let isAccessAllowed = false;
-
             if (isQRScan && cardData.allowQRScan) {
                 isAccessAllowed = true;
             } else if (!isQRScan && cardData.allowDirectLink) {
@@ -169,13 +166,11 @@
                 return;
             }
 
-            // QR 
             if (isQRScan) {
                 localStorage.setItem(SESSION_START_KEY, Date.now().toString());
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
 
-            // 2. Expiry Check Logic
             if (expiryMins <= 0) {
                 wrapperEl.classList.remove('hidden');
                 notFoundEl.classList.add('hidden');
@@ -183,7 +178,6 @@
             }
 
             let sessionStart = localStorage.getItem(SESSION_START_KEY);
-            
             if (!sessionStart) {
                 sessionStart = Date.now().toString();
                 localStorage.setItem(SESSION_START_KEY, sessionStart);
@@ -201,7 +195,6 @@
         }
 
         function renderCard() {
-            // Update 404 Text Content
             document.getElementById('displayNotFoundTitle').innerText = cardData.notFoundTitle || "404";
             document.getElementById('displayNotFoundSubtitle').innerText = cardData.notFoundSubtitle || "Not Found";
             document.getElementById('displayNotFoundMessage').innerHTML = cardData.notFoundMessage || "The resource requested could not be found on this server!";
@@ -233,7 +226,10 @@
             container.innerHTML = "";
 
             if (cardData.links && Array.isArray(cardData.links)) {
-                cardData.links.forEach(link => {
+                // ఇక్కడ పొజిషన్ నంబర్ల ఆధారంగా ఐకాన్‌లను ఆటోమేటిక్‌గా ఆర్డర్ చేస్తుంది
+                const sortedLinks = [...cardData.links].sort((a, b) => (a.position || 0) - (b.position || 0));
+
+                sortedLinks.forEach(link => {
                     let hrefAttr = "#";
 
                     if (link.type === 'whatsapp') {

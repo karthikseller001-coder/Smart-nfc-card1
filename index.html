@@ -84,7 +84,7 @@
             versionCode: "SYS-VER: 01-2026-CARD001", 
             title: "VKS Studio",
             subtitle: "Follow • Connect • Explore",
-            logoUrl: "", 
+            logoUrl: "https://github.com/karthikseller001-coder/Smart-nfc-card1/blob/main/WhatsApp%20Image%202026-11-10%20at%201.12.09%20PM.jpeg?raw=true", 
             footerText: "Provided by Smart Cards",
             connectText: "Connect",
             connectUrl: "https://instagram.com",
@@ -169,7 +169,7 @@
                 return;
             }
 
-            // QR ద్వారా ఓపెన్ అయితే session సేవ్‌ చేసి URL క్లీన్ చేయండి
+            // QR 
             if (isQRScan) {
                 localStorage.setItem(SESSION_START_KEY, Date.now().toString());
                 window.history.replaceState({}, document.title, window.location.pathname);
@@ -260,9 +260,8 @@
 
         window.onload = function() {
             renderCard();
-            // నిరంతరం సమయాన్ని తనిఖీ చేసి, గడువు ముగియగానే స్క్రీన్ మారేలా చేస్తుంది
             if (parseFloat(cardData.session.expiryMinutes || 0) > 0) {
-                setInterval(checkSessionExpiry, 3000); // ప్రతి 3 సెకన్లకు చెక్ చేస్తుంది
+                setInterval(checkSessionExpiry, 3000); 
             }
         };
     </script>

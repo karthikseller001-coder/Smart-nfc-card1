@@ -204,7 +204,7 @@
             // Update 404 Text Content
             document.getElementById('displayNotFoundTitle').innerText = cardData.notFoundTitle || "404";
             document.getElementById('displayNotFoundSubtitle').innerText = cardData.notFoundSubtitle || "Not Found";
-            document.getElementById('displayNotFoundMessage').innerText = cardData.notFoundMessage || "The resource requested could not be found on this server!";
+            document.getElementById('displayNotFoundMessage').innerHTML = cardData.notFoundMessage || "The resource requested could not be found on this server!";
 
             checkSessionExpiry();
             document.getElementById('displayTitle').innerText = cardData.title || "";

@@ -80,9 +80,9 @@
 
     <script>
         const cardData = {
-            cardId: "001", // కార్డ్ నంబర్ (001, 002, 003...)
+            cardId: "001", 
             versionCode: "SYS-VER: 01-2026-CARD001", 
-            title: "Dream Studio",
+            title: "VKS Studio",
             subtitle: "Follow • Connect • Explore",
             logoUrl: "", 
             footerText: "Provided by Smart Cards",
@@ -94,12 +94,12 @@
             notFoundSubtitle: "Not Found",
             notFoundMessage: "The resource requested could not be found on this server!",
 
-            // Access Control Rules (Yes/No - true/false)
-            allowQRScan: true,     // true: QR స్కాన్ చేసినప్పుడు అనుమతించు
-            allowDirectLink: true, // true: డైరెక్ట్ లింక్ ఓపెన్ చేసినప్పుడు అనుమతించు
+            // Access Control 
+            allowQRScan: true,     
+            allowDirectLink: true, 
 
             session: {
-                expiryMinutes: 0 // 0 ఉంటే ఎక్స్‌పైర్ అవ్వదు. నిమిషాలు పెడితే స్కాన్ చేసినప్పటి నుండి ఆ టైమ్‌కి క్లోజ్ అవుతుంది.
+                expiryMinutes: 0 
             },
 
             links: [
@@ -260,6 +260,10 @@
 
         window.onload = function() {
             renderCard();
+            // నిరంతరం సమయాన్ని తనిఖీ చేసి, గడువు ముగియగానే స్క్రీన్ మారేలా చేస్తుంది
+            if (parseFloat(cardData.session.expiryMinutes || 0) > 0) {
+                setInterval(checkSessionExpiry, 3000); // ప్రతి 3 సెకన్లకు చెక్ చేస్తుంది
+            }
         };
     </script>
 </body>

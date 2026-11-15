@@ -369,13 +369,13 @@
   <script>
     const PORTAL_CONFIG = {
       // 1. సెషన్ టైమ్ (నిమిషాలలో) - QR స్కాన్ (?scan=1) చేసినప్పుడు ఎంతసేపు పనిచేయాలో ఇవ్వండి (0 = Unlimited)
-      SESSION_MINUTES: 1,
+      SESSION_MINUTES: 0,
 
       // 2. లోగో చిత్రం URL (ఖాళీగా ఉంచితే డిఫాల్ట్ లోగో కనిపిస్తుంది)
       LOGO_URL: "",
 
       // 3. లోగో మీద క్లిక్ చేస్తే ఎక్కడికి వెళ్ళాలో ఆ లింక్ (ఖాళీగా ఉంచితే క్లిక్ అవ్వదు)
-      LOGO_CLICK_LINK: "https://yourwebsite.com",
+      LOGO_CLICK_LINK: "",
 
       // 4. బటన్ల లిస్ట్ (ఏదైనా ఒక బ్లాక్ కాపీ చేసి క్రింద పేస్ట్ చేస్తే కొత్త ఐకాన్ యాడ్ అవుతుంది!)
       // - label: ఐకాన్ క్రింద కనిపించే పేరు (\n పెడితే రెండు లైన్లలో వస్తుంది)
@@ -386,39 +386,47 @@
       BUTTONS: [
         {
           label: "Google\nReviews",
-          link: "https://g.page/r/YOUR_GOOGLE_REVIEW_LINK/review",
+          link: "",
           iconUrl: "",
           iconType: "google",
           position: 1
         },
         {
           label: "Contact\nUs",
-          link: "tel:+919876543210",
+          link: "tel:+919494089898",
           iconUrl: "",
           iconType: "call",
           position: 2
         },
         {
           label: "Instagram",
-          link: "https://instagram.com/your_username",
+          link: "https://instagram.com/amigos(THEPIZZASPECIALIST)",
           iconUrl: "",
           iconType: "instagram",
           position: 3
         },
         {
           label: "WhatsApp",
-          link: "https://wa.me/919876543210",
+          link: "https://wa.me/919494089898",
           iconUrl: "",
           iconType: "whatsapp",
           position: 4
         },
         {
-          label: "Our\nWebsite",
-          link: "https://yourwebsite.com",
+          label: "Swiggy",
+          link: "https://www.swiggy.com/menu/400688?source=sharing",
           iconUrl: "",
-          iconType: "website",
+          iconType: "swiggy",
           position: 5
-        }
+        },
+        
+        {
+          label: "Zomato",
+          link: "https://zomato.onelink.me/xqzv/8juqto1v",
+          iconUrl: "",
+          iconType: "zomato",
+          position: 5
+    }
       ],
 
       // 5. క్రింద కనిపించే పేరు
